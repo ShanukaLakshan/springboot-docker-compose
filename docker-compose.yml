@@ -2,17 +2,21 @@ version: "3.8"
 
 services:
   springboot-app:
-    # container_name: spring-app
-    image: springbooot-app
+    image: springboot-app
+    container_name: springboot-app
+    build:
+      context: ./server
+      dockerfile: Dockerfile
     restart: always
-    build: .
     ports:
-      - 8080:8080
+      - "8081:8080"
     environment:
       MYSQL_HOST: mysqldb
       MYSQL_USER: root
       MYSQL_PASSWORD: root
       MYSQL_PORT: 3306
+    networks:
+      - app-network
 
   mysqldb:
     container_name: mysqldb
@@ -20,7 +24,22 @@ services:
     volumes:
       - /home/user/Desktop/db:/var/lib/mysql
     ports:
-      - 3307:3306
+      - "3306:3306"
     environment:
       MYSQL_DATABASE: test
       MYSQL_ROOT_PASSWORD: root
+    networks:
+      - app-network
+
+  react-app:
+    build:
+      context: ./client
+      dockerfile: Dockerfile
+    container_name: react-app
+    ports:
+      - "3000:3000"
+    networks:
+      - app-network
+
+networks:
+  app-network:
